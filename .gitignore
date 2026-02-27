@@ -1,0 +1,41 @@
+# ========================
+# Environment & Secrets
+# ========================
+.env
+.env.local
+.env.*.local
+
+# ========================
+# Node.js
+# ========================
+node_modules/
+
+# ========================
+# TypeScript Build Output
+# ========================
+dist/
+
+# ========================
+# Prisma
+# ========================
+# Keep prisma/schema.prisma tracked, but ignore generated client if needed
+# prisma/generated/
+
+# ========================
+# Logs
+# ========================
+logs/
+*.log
+npm-debug.log*
+
+# ========================
+# OS Files
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# Editor
+# ========================
+.vscode/
+.idea/
