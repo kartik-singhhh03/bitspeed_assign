@@ -171,7 +171,9 @@ export async function identifyContact(input: IdentifyInput) {
   return buildResponse(oldestPrimary.id, finalContacts);
 }
 
-// Helper to build the response object from a list of contacts
+// Helper to build the response object from a list of contacts.
+// Primary contact's email and phone always appear first.
+// Sets are used to track seen values and prevent duplicates.
 function buildResponse(
   primaryId: number,
   contacts: Array<{
@@ -185,24 +187,41 @@ function buildResponse(
   const phoneNumbers: string[] = [];
   const secondaryContactIds: number[] = [];
 
+  // Use Sets to efficiently track what has already been added
+  const seenEmails = new Set<string>();
+  const seenPhones = new Set<string>();
+
+  // Find the primary contact from the list
+  const primary = contacts.find((c) => c.id === primaryId);
+
+  // Add primary's email and phone first so they appear at index 0
+  if (primary?.email) {
+    emails.push(primary.email);
+    seenEmails.add(primary.email);
+  }
+  if (primary?.phoneNumber) {
+    phoneNumbers.push(primary.phoneNumber);
+    seenPhones.add(primary.phoneNumber);
+  }
+
+  // Now loop through all contacts and add secondary data
   for (const contact of contacts) {
-    if (contact.id === primaryId) {
-      // Primary's details go first in the arrays
-      if (contact.email && !emails.includes(contact.email)) {
-        emails.unshift(contact.email);
-      }
-      if (contact.phoneNumber && !phoneNumbers.includes(contact.phoneNumber)) {
-        phoneNumbers.unshift(contact.phoneNumber);
-      }
-    } else {
-      // Secondary contact
-      secondaryContactIds.push(contact.id);
-      if (contact.email && !emails.includes(contact.email)) {
-        emails.push(contact.email);
-      }
-      if (contact.phoneNumber && !phoneNumbers.includes(contact.phoneNumber)) {
-        phoneNumbers.push(contact.phoneNumber);
-      }
+    // Skip the primary — already handled above
+    if (contact.id === primaryId) continue;
+
+    // All non-primary contacts are secondaries
+    secondaryContactIds.push(contact.id);
+
+    // Add email if not already in the list
+    if (contact.email && !seenEmails.has(contact.email)) {
+      emails.push(contact.email);
+      seenEmails.add(contact.email);
+    }
+
+    // Add phone number if not already in the list
+    if (contact.phoneNumber && !seenPhones.has(contact.phoneNumber)) {
+      phoneNumbers.push(contact.phoneNumber);
+      seenPhones.add(contact.phoneNumber);
     }
   }
 
