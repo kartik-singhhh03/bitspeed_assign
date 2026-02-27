@@ -1,5 +1,5 @@
 import express from "express";
-import { identifyContact } from "./contactService";
+import { identifyContact } from "./identity.service";
 
 const app = express();
 const PORT = 3000;
